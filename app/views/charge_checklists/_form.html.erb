@@ -1,0 +1,140 @@
+<%= form_with model: @charge_checklist, local: true, authenticity_token: true, class: "space-y-6 mt-8" do |f| %>
+  <% if @charge_checklist.errors.any? %>
+    <div class="rounded-md border border-red-300 bg-red-50 text-red-700 p-3">
+      <div class="font-semibold mb-1">Please fix the following:</div>
+      <ul class="list-disc ml-5 text-sm"><% @charge_checklist.errors.full_messages.each { |m| %><li><%= m %></li><% } %></ul>
+    </div>
+  <% end %>
+
+  <!-- Top core fields -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div>
+      <label class="block text-sm font-medium mb-1">Patient</label>
+      <%= f.collection_select :patient_id, Patient.order(:last_name, :first_name), :id, ->(p){ [p.last_name, p.first_name].compact.join(", ") }, { include_blank: "Select patient" }, class: "w-full border rounded px-2 py-1" %>
+    </div>
+    <div>
+      <label class="block text-sm font-medium mb-1">Performed on</label>
+      <%= f.date_field :performed_on, class: "w-full border rounded px-2 py-1" %>
+    </div>
+    <div>
+      <label class="block text-sm font-medium mb-1">Notes</label>
+      <%= f.text_field :notes, class: "w-full border rounded px-2 py-1" %>
+    </div>
+  </div>
+
+  <% items_by_category = @charge_checklist.line_items
+                                          .sort_by { |li| [li.charge_item.charge_category&.position || 0, li.charge_item.position || 0, li.charge_item.name] }
+                                          .group_by { |li| li.charge_item.charge_category } %>
+
+  <!-- Modern sections, 3 responsive columns -->
+  <% categories = Array(@categories) %>
+  <% columns = 3; slice_size = [(categories.size / columns.to_f).ceil, 1].max %>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <% categories.each_slice(slice_size) do |column_categories| %>
+      <div class="space-y-6">
+        <% column_categories.each do |category| %>
+          <section class="rounded-lg border border-gray-200">
+            <div class="px-4 py-2 border-b font-semibold"><%= category.name %></div>
+
+            <div class="p-3 space-y-2">
+              <% items = items_by_category[category] || [] %>
+              <% if items.any? %>
+                <% addable = ["Medicines","IVFs","Others","Laboratory Request"].include?(category.name) %>
+                <%= f.fields_for :line_items, items do |li| %>
+                  <div class="flex items-center gap-3">
+                    <%= li.hidden_field :id %>
+                    <%= li.hidden_field :charge_item_id %>
+                    <% unless addable %>
+                      <%= li.number_field :quantity, min: 0, step: 1, class: "w-16 text-right border rounded px-2 py-1" %>
+                    <% end %>
+                    <span class="text-sm flex-1"><%= li.object.charge_item.name %></span>
+                  </div>
+                <% end %>
+              <% else %>
+                <div class="text-sm text-gray-500">No items</div>
+              <% end %>
+
+              <% if category.name == 'Medicines' %>
+                <div class="mt-2" data-controller="med-items">
+                  <div class="flex items-center justify-between">
+                    <div class="text-sm text-gray-600">Add medicine</div>
+                    <button type="button"
+                            class="rounded-md border px-2 py-1 text-sm hover:bg-gray-50"
+                            data-action="click->med-items#add"
+                            data-med-items-template-param="#tmpl-medicine-row">
+                      + Add
+                    </button>
+                  </div>
+
+                  <div class="mt-2 space-y-2" data-med-items-target="container"></div>
+
+                  <template id="tmpl-medicine-row">
+                    <div class="grid grid-cols-[4rem_1fr_auto_auto] items-center gap-3 w-full overflow-hidden" data-med-items-row>
+                      <input type="hidden" name="charge_checklist[line_items_attributes][NEW_KEY][charge_item_id]" value="<%= @medicine_charge_item_id %>">
+
+                      <input type="number" min="0" step="1" value="1"
+                             class="w-[4rem] text-right border rounded px-2 py-1"
+                             name="charge_checklist[line_items_attributes][NEW_KEY][quantity]">
+
+                      <select class="w-full min-w-0 border rounded px-2 py-1"
+                              name="charge_checklist[line_items_attributes][NEW_KEY][metadata][medicine_id]"
+                              data-action="change->med-items#select">
+                        <option value="">Select medicine…</option>
+                        <% @medicines.each do |m| %>
+                          <option value="<%= m.id %>" data-price="<%= m.unit_price_cents.to_i %>">
+                            <%= m.item_code %> — <%= m.drug_name %>
+                            <% if m.form.present? || m.strength.present? %>(<%= [m.form, m.strength].compact.join(" / ") %>)<% end %>
+                          </option>
+                        <% end %>
+                      </select>
+
+                      <span class="text-xs text-gray-600 min-w-[3.5rem] text-right shrink-0" data-role="unit-price-text">$0.00</span>
+
+                      <button type="button" class="text-gray-500 hover:text-red-600 shrink-0"
+                              title="Remove" data-action="click->med-items#remove">✕</button>
+
+                      <input type="hidden" name="charge_checklist[line_items_attributes][NEW_KEY][unit_price_cents]" data-role="unit-price-cents" value="0">
+                    </div>
+                  </template>
+                </div>
+              <% end %>
+            </div>
+
+            <% # Addable free-text rows for these categories %>
+            <%# addable = ["Medicines","IVFs","Others","Laboratory Request"].include?(category.name) %>
+            <%# if addable && @custom_item_ids&.dig(category.name) %>
+<!--              <div class="px-4 pb-4">-->
+<!--                <div class="flex items-center justify-between">-->
+<!--                  <div class="text-sm text-gray-600">Add entry</div>-->
+<!--                  <button type="button"-->
+<!--                          class="rounded-md border px-2 py-1 text-sm hover:bg-gray-50"-->
+<!--                          data-action="nested-form#add"-->
+<!--                          data-nested-form-template-param="#tmpl-<%#= category.id %>">-->
+<!--                    + Add-->
+<!--                  </button>-->
+<!--                </div>-->
+<!--                <div class="mt-2 space-y-2" data-controller="nested-form" data-nested-form-wrapper-target="container"></div>-->
+<!--                <template id="tmpl-<%#= category.id %>">-->
+<!--                  <div class="flex items-center gap-3">-->
+<!--                    <input type="hidden" name="charge_checklist[line_items_attributes][NEW_RECORD][charge_item_id]" value="<%#= @custom_item_ids[category.name] %>">-->
+<!--                    <input type="number" min="0" step="1" value="0" class="w-16 text-right border rounded px-2 py-1"-->
+<!--                           name="charge_checklist[line_items_attributes][NEW_RECORD][quantity]">-->
+<!--                    <input type="text" class="flex-1 border rounded px-2 py-1"-->
+<!--                           placeholder="Describe <%#= category.name.singularize.downcase %>..."-->
+<!--                           name="charge_checklist[line_items_attributes][NEW_RECORD][metadata][label]">-->
+<!--                    <button type="button" class="text-gray-500 hover:text-red-600"-->
+<!--                            title="Remove" data-action="nested-form#remove">✕</button>-->
+<!--                  </div>-->
+<!--                </template>-->
+<!--              </div>-->
+            <%# end %>
+          </section>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <div>
+    <%= f.submit "Save checklist", class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium" %>
+  </div>
+<% end %>

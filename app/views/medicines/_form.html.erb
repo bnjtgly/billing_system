@@ -1,0 +1,77 @@
+<%= form_with(model: medicine, class: "contents") do |form| %>
+  <% if medicine.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(medicine.errors.count, "error") %> prohibited this medicine from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% medicine.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :item_code %>
+    <%= form.text_field :item_code, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": medicine.errors[:item_code].none?, "border-red-400 focus:outline-red-600": medicine.errors[:item_code].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :drug_name %>
+    <%= form.text_field :drug_name, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": medicine.errors[:drug_name].none?, "border-red-400 focus:outline-red-600": medicine.errors[:drug_name].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :generic_name %>
+    <%= form.text_field :generic_name, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": medicine.errors[:generic_name].none?, "border-red-400 focus:outline-red-600": medicine.errors[:generic_name].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :frequency %>
+    <%= form.text_field :frequency, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": medicine.errors[:frequency].none?, "border-red-400 focus:outline-red-600": medicine.errors[:frequency].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :dosage %>
+    <%= form.text_field :dosage, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": medicine.errors[:dosage].none?, "border-red-400 focus:outline-red-600": medicine.errors[:dosage].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :route %>
+    <%= form.text_field :route, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": medicine.errors[:route].none?, "border-red-400 focus:outline-red-600": medicine.errors[:route].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :unit %>
+    <%= form.text_field :unit, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": medicine.errors[:unit].none?, "border-red-400 focus:outline-red-600": medicine.errors[:unit].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :unit_price_cents %>
+    <%= form.number_field :unit_price_cents, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": medicine.errors[:unit_price_cents].none?, "border-red-400 focus:outline-red-600": medicine.errors[:unit_price_cents].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :qty %>
+    <%= form.number_field :qty, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": medicine.errors[:qty].none?, "border-red-400 focus:outline-red-600": medicine.errors[:qty].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :notes %>
+    <%= form.textarea :notes, rows: 4, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": medicine.errors[:notes].none?, "border-red-400 focus:outline-red-600": medicine.errors[:notes].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :metadata %>
+    <%= form.text_field :metadata, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": medicine.errors[:metadata].none?, "border-red-400 focus:outline-red-600": medicine.errors[:metadata].any?}] %>
+  </div>
+
+  <div class="my-5 flex items-center gap-2">
+    <%= form.label :active %>
+    <%= form.checkbox :active, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": medicine.errors[:active].none?, "border-red-400 focus:outline-red-600": medicine.errors[:active].any?}] %>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>

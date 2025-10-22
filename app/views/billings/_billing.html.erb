@@ -1,0 +1,46 @@
+<div id="<%= dom_id billing %>" class="w-full sm:w-auto my-5 space-y-5">
+  <div>
+    <strong class="block font-medium mb-1">Patient:</strong>
+    <%= billing.patient_id %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Statement number:</strong>
+    <%= billing.statement_number %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Statement date:</strong>
+    <%= billing.statement_date %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Period start:</strong>
+    <%= billing.period_start %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Period end:</strong>
+    <%= billing.period_end %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Subtotal cents:</strong>
+    <%= billing.subtotal_cents %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Discount cents:</strong>
+    <%= billing.discount_cents %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Total cents:</strong>
+    <%= billing.total_cents %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Status:</strong>
+    <%= billing.status %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Notes:</strong>
+    <%= billing.notes %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Metadata:</strong>
+    <%= billing.metadata %>
+  </div>
+</div>

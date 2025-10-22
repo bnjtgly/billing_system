@@ -1,0 +1,34 @@
+<div id="<%= dom_id charge_item %>" class="w-full sm:w-auto my-5 space-y-5">
+  <div>
+    <strong class="block font-medium mb-1">Name:</strong>
+    <%= charge_item.name %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Charge category:</strong>
+    <%= charge_item.charge_category_id %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Unit:</strong>
+    <%= charge_item.unit %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Default price cents:</strong>
+    <%= charge_item.default_price_cents %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Position:</strong>
+    <%= charge_item.position %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Active:</strong>
+    <%= charge_item.active? ? "Yes" : "No" %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Metadata:</strong>
+    <%= charge_item.metadata %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Inventory item:</strong>
+    <%= charge_item.inventory_item_id %>
+  </div>
+</div>

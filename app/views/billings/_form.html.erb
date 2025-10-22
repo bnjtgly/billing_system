@@ -1,0 +1,79 @@
+<%= form_with(model: billing, class: "space-y-6") do |form| %>
+  <% if billing.errors.any? %>
+    <div class="bg-red-50 text-red-600 px-3 py-2 rounded-md">
+      <div class="font-semibold mb-1"><%= pluralize(billing.errors.count, "error") %> prevented saving</div>
+      <ul class="list-disc ml-5 text-sm">
+        <% billing.errors.full_messages.each { |m| %><li><%= m %></li><% } %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div>
+      <label class="block text-sm font-medium mb-1">Patient</label>
+      <%= form.collection_select :patient_id,
+                                 Patient.order(:last_name, :first_name),
+                                 :id, ->(p){ [p.last_name, p.first_name].compact.join(", ") },
+                                 { include_blank: "Select patient" },
+                                 class: "w-full border rounded px-2 py-1.5" %>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-1">Statement number</label>
+      <%= form.text_field :statement_number, class: "w-full border rounded px-2 py-1.5" %>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-1">Statement date</label>
+      <%= form.date_field :statement_date, class: "w-full border rounded px-2 py-1.5" %>
+    </div>
+
+    <div class="grid grid-cols-2 gap-3">
+      <div>
+        <label class="block text-sm font-medium mb-1">Period start</label>
+        <%= form.date_field :period_start, class: "w-full border rounded px-2 py-1.5" %>
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1">Period end</label>
+        <%= form.date_field :period_end, class: "w-full border rounded px-2 py-1.5" %>
+      </div>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-1">Status</label>
+      <%= form.select :status,
+                      Billing.statuses.keys.map { |s| [s.titleize, s] },
+                      {}, class: "w-full border rounded px-2 py-1.5" %>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-1">Discount (cents)</label>
+      <%= form.number_field :discount_cents, min: 0, step: 1, class: "w-full border rounded px-2 py-1.5" %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div>
+      <div class="text-sm text-gray-600">Subtotal</div>
+      <div class="font-semibold"><%= number_to_currency(billing.subtotal_cents.to_i / 100.0) %></div>
+    </div>
+    <div>
+      <div class="text-sm text-gray-600">Discount</div>
+      <div class="font-semibold"><%= number_to_currency(billing.discount_cents.to_i / 100.0) %></div>
+    </div>
+    <div>
+      <div class="text-sm text-gray-600">Total</div>
+      <div class="font-semibold"><%= number_to_currency(billing.total_cents.to_i / 100.0) %></div>
+    </div>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium mb-1">Notes</label>
+    <%= form.text_area :notes, rows: 4, class: "w-full border rounded px-2 py-1.5" %>
+  </div>
+
+  <div>
+    <%= form.submit "Save",
+                    class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium" %>
+  </div>
+<% end %>

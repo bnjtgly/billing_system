@@ -1,0 +1,50 @@
+<div id="<%= dom_id medicine %>" class="w-full sm:w-auto my-5 space-y-5">
+  <div>
+    <strong class="block font-medium mb-1">Item code:</strong>
+    <%= medicine.item_code %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Drug name:</strong>
+    <%= medicine.drug_name %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Generic name:</strong>
+    <%= medicine.generic_name %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Frequency:</strong>
+    <%= medicine.frequency %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Dosage:</strong>
+    <%= medicine.dosage %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Route:</strong>
+    <%= medicine.route %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Unit:</strong>
+    <%= medicine.unit %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Unit price cents:</strong>
+    <%= medicine.unit_price_cents %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Qty:</strong>
+    <%= medicine.qty %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Notes:</strong>
+    <%= medicine.notes %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Metadata:</strong>
+    <%= medicine.metadata %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Active:</strong>
+    <%= medicine.active? ? "Yes" : "No" %>
+  </div>
+</div>

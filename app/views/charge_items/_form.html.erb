@@ -1,0 +1,68 @@
+<%= form_with(model: charge_item, class: "contents") do |form| %>
+  <% if charge_item.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(charge_item.errors.count, "error") %> prohibited this charge_item from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% charge_item.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :name %>
+    <%= form.text_field :name, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": charge_item.errors[:name].none?, "border-red-400 focus:outline-red-600": charge_item.errors[:name].any?}] %>
+  </div>
+
+  <!-- app/views/charge_items/_form.html.erb -->
+  <div class="my-5">
+    <%= form.label :charge_category_id, "Category" %>
+    <%= form.collection_select :charge_category_id, @categories, :id, :name,
+                               { include_blank: "Select..." },
+                               class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full bg-white",
+                               {"border-gray-400 focus:outline-blue-600": charge_item.errors[:name].none?, "border-red-400 focus:outline-red-600": charge_item.errors[:name].any?}]
+    %>
+    <% if @categories.blank? %>
+      <p class="text-sm text-gray-500 mt-2">
+        No categories yet.
+        <%= link_to "Create one", new_charge_category_path, class: "text-blue-600 underline" %>
+      </p>
+    <% end %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :unit %>
+    <%= form.text_field :unit, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": charge_item.errors[:unit].none?, "border-red-400 focus:outline-red-600": charge_item.errors[:unit].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :default_price_cents %>
+    <%= form.number_field :default_price_cents, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": charge_item.errors[:default_price_cents].none?, "border-red-400 focus:outline-red-600": charge_item.errors[:default_price_cents].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :position %>
+    <%= form.number_field :position, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": charge_item.errors[:position].none?, "border-red-400 focus:outline-red-600": charge_item.errors[:position].any?}] %>
+  </div>
+
+  <div class="my-5 flex items-center gap-2">
+    <%= form.label :active %>
+    <%= form.checkbox :active, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": charge_item.errors[:active].none?, "border-red-400 focus:outline-red-600": charge_item.errors[:active].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :metadata %>
+    <%= form.text_field :metadata, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": charge_item.errors[:metadata].none?, "border-red-400 focus:outline-red-600": charge_item.errors[:metadata].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :inventory_item_id %>
+    <%= form.number_field :inventory_item_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": charge_item.errors[:inventory_item_id].none?, "border-red-400 focus:outline-red-600": charge_item.errors[:inventory_item_id].any?}] %>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>

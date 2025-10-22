@@ -1,0 +1,104 @@
+<% content_for :title, "Billing statement" %>
+
+<div class="max-w-5xl mx-auto space-y-4 print:w-[210mm]">
+  <div class="flex items-center justify-between print:hidden">
+    <h1 class="text-2xl font-semibold">Billing statement</h1>
+    <div class="flex items-center gap-2 print:hidden">
+      <% if @billing.draft? %>
+        <%= button_to "Mark as issued",
+                      issue_billing_path(@billing),
+                      method: :patch,
+                      data: { turbo_confirm: "Issue this billing?" },
+                      class: "rounded-md px-3.5 py-2 bg-green-600 hover:bg-green-500 text-white text-sm font-medium" %>
+      <% end %>
+      <button type="button" onclick="window.print()"
+              class="rounded-md px-3.5 py-2 bg-gray-100 hover:bg-gray-50 text-sm font-medium">Print</button>
+    </div>
+  </div>
+
+  <div class="bg-white border border-gray-200 rounded-lg p-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+      <div>
+        <div class="font-semibold">Patient name</div>
+        <div><%= [@billing.patient&.first_name, @billing.patient&.last_name].compact.join(" ") %></div>
+      </div>
+      <div>
+        <div class="font-semibold">Statement date</div>
+        <div><%= @billing.statement_date || (defined?(l) ? l(Date.current) : Date.current) %></div>
+      </div>
+      <div>
+        <div class="font-semibold">Included checklists</div>
+        <% dates = @billing.charge_checklists.order(:performed_on).pluck(:performed_on) %>
+        <div><%= dates.present? ? dates.map { |d| defined?(l) ? l(d) : d }.join(", ") : "—" %></div>
+      </div>
+      <div>
+        <div class="font-semibold">Period</div>
+        <div><%= [@billing.period_start, @billing.period_end].compact.join(" – ") %></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+    <div class="px-4 py-2 border-b font-semibold">Details</div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead class="bg-gray-50 text-gray-700">
+        <tr>
+          <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Date</th>
+          <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Categ</th>
+          <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Item code</th>
+          <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Drug / Item name</th>
+          <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Route</th>
+          <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Freq</th>
+          <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Dosage</th>
+          <th class="px-3 py-2 text-right uppercase tracking-wide text-xs font-semibold">Qty</th>
+          <th class="px-3 py-2 text-right uppercase tracking-wide text-xs font-semibold">Price</th>
+          <th class="px-3 py-2 text-right uppercase tracking-wide text-xs font-semibold">Amount</th>
+        </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+        <% @billing.billing_lines.order(:date, :id).each do |ln| %>
+          <tr class="hover:bg-gray-50">
+            <td class="px-3 py-2 whitespace-nowrap"><%= ln.date %></td>
+            <td class="px-3 py-2 whitespace-nowrap"><%= ln.category %></td>
+            <td class="px-3 py-2 whitespace-nowrap"><%= ln.item_code %></td>
+            <td class="px-3 py-2"><%= ln.name %></td>
+            <td class="px-3 py-2 whitespace-nowrap"><%= ln.route %></td>
+            <td class="px-3 py-2 whitespace-nowrap"><%= ln.frequency %></td>
+            <td class="px-3 py-2 whitespace-nowrap"><%= ln.dosage %></td>
+            <td class="px-3 py-2 text-right whitespace-nowrap"><%= ln.quantity %></td>
+            <td class="px-3 py-2 text-right whitespace-nowrap"><%= number_to_currency(ln.unit_price_cents.to_i / 100.0) %></td>
+            <td class="px-3 py-2 text-right whitespace-nowrap"><%= number_to_currency(ln.amount_cents.to_i / 100.0) %></td>
+          </tr>
+        <% end %>
+        </tbody>
+        <tfoot class="bg-gray-50">
+        <tr>
+          <td colspan="8"></td>
+          <td class="px-3 py-2 text-right font-semibold">Subtotal</td>
+          <td class="px-3 py-2 text-right font-semibold"><%= number_to_currency(@billing.subtotal_cents.to_i / 100.0) %></td>
+        </tr>
+        <tr>
+          <td colspan="8"></td>
+          <td class="px-3 py-2 text-right font-semibold">Discount</td>
+          <td class="px-3 py-2 text-right font-semibold"><%= number_to_currency(@billing.discount_cents.to_i / 100.0) %></td>
+        </tr>
+        <tr>
+          <td colspan="8"></td>
+          <td class="px-3 py-2 text-right font-semibold">Total</td>
+          <td class="px-3 py-2 text-right font-semibold"><%= number_to_currency(@billing.total_cents.to_i / 100.0) %></td>
+        </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+
+<style>
+    @media print {
+        header, .print\:hidden, .btn, [onclick="window.print()"] { display: none !important; }
+        body { background: white !important; }
+        table { page-break-inside: auto; }
+        tr { page-break-inside: avoid; page-break-after: auto; }
+    }
+</style>

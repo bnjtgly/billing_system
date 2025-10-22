@@ -1,0 +1,85 @@
+<% content_for :title, "Create billing from checklists" %>
+
+<div class="max-w-5xl mx-auto space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-semibold">Create billing from checklists</h1>
+    <%= link_to "Back to Billings", billings_path, class: "rounded-md px-3.5 py-2 bg-gray-100 hover:bg-gray-50 text-sm font-medium" %>
+  </div>
+
+  <!-- Step 1: pick patient -->
+  <div class="rounded-lg border border-gray-200 bg-white p-4">
+    <%= form_with url: new_from_checklists_billings_path, method: :get, local: true, class: "grid grid-cols-1 sm:grid-cols-3 gap-4" do %>
+      <div class="sm:col-span-2">
+        <label class="block text-sm font-medium mb-1">Patient</label>
+        <%= select_tag :patient_id,
+                       options_from_collection_for_select(@patients, :id, ->(p){ [p.last_name, p.first_name].compact.join(", ") }, params[:patient_id]),
+                       include_blank: "Select patient",
+                       class: "w-full border rounded px-2 py-1.5" %>
+      </div>
+      <div class="flex items-end">
+        <button class="rounded-md px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium">Load checklists</button>
+      </div>
+    <% end %>
+  </div>
+
+  <% if @patient %>
+    <!-- Step 2: select checklists -->
+    <div class="rounded-lg border border-gray-200 bg-white">
+      <div class="px-4 py-2 border-b font-semibold">
+        Select charge checklists for <%= [@patient.first_name, @patient.last_name].compact.join(" ") %>
+      </div>
+      <div class="p-4">
+        <%= form_with url: create_from_checklists_billings_path, method: :post, local: true, class: "space-y-4" do %>
+          <%= hidden_field_tag :patient_id, @patient.id %>
+
+          <% if @charge_checklists.any? %>
+            <div class="overflow-x-auto rounded border">
+              <table class="min-w-full text-sm">
+                <thead class="bg-gray-50 text-gray-700">
+                <tr>
+                  <th class="px-3 py-2 w-10">
+                    <input id="select-all" type="checkbox" class="rounded border-gray-300">
+                  </th>
+                  <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Performed on</th>
+                  <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Items</th>
+                  <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Notes</th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                <% @charge_checklists.each do |cc| %>
+                  <tr class="hover:bg-gray-50">
+                    <td class="px-3 py-2">
+                      <input type="checkbox" name="checklist_ids[]" value="<%= cc.id %>" class="ck rounded border-gray-300">
+                    </td>
+                    <td class="px-3 py-2 whitespace-nowrap"><%= defined?(l) ? l(cc.performed_on) : cc.performed_on %></td>
+                    <td class="px-3 py-2 whitespace-nowrap"><%= cc.line_items.size %></td>
+                    <td class="px-3 py-2 truncate max-w-[28rem]" title="<%= cc.notes %>"><%= cc.notes %></td>
+                  </tr>
+                <% end %>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="flex items-center justify-between text-sm text-gray-600">
+              <span>Selected checklists will be snapshotted into a new Billing.</span>
+              <button class="rounded-md px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-medium">Generate billing</button>
+            </div>
+          <% else %>
+            <div class="text-sm text-gray-600">No charge checklists for this patient.</div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <script>
+        // simple select-all
+        document.addEventListener("turbo:load", () => {
+            const all = document.getElementById("select-all");
+            if (!all) return;
+            all.addEventListener("change", () => {
+                document.querySelectorAll("input.ck").forEach(cb => { cb.checked = all.checked; });
+            });
+        });
+    </script>
+  <% end %>
+</div>
