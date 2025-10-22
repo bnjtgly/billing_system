@@ -12,7 +12,9 @@ class BillingsController < ApplicationController
       @billings = @billings.where(
         "LOWER(billings.statement_number) LIKE :q
        OR LOWER(patients.first_name) LIKE :q
-       OR LOWER(patients.last_name) LIKE :q",
+       OR LOWER(patients.last_name) LIKE :q
+       OR LOWER(CONCAT(patients.first_name, ' ', patients.last_name)) LIKE :q
+       OR LOWER(CONCAT(patients.last_name, ' ', patients.first_name)) LIKE :q",
         q: q
       )
     end

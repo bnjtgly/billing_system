@@ -19,10 +19,10 @@ class Billing < ApplicationRecord
   end
 
   # Build denormalized lines from selected checklists (stable for printing)
+  # app/models/billing.rb
   def populate_from_checklists!(checklists)
     medicine_map = Medicine.where(id: extract_medicine_ids(checklists)).index_by(&:id)
 
-    lines = []
     checklists.each do |cc|
       billing_checklists.find_or_create_by!(charge_checklist_id: cc.id)
       cc.line_items.includes(:charge_item).each do |li|
@@ -32,9 +32,10 @@ class Billing < ApplicationRecord
         unit_cents = li.unit_price_cents.presence || ci.default_price_cents.to_i
         qty = li.quantity.to_i
 
-        lines << billing_lines.build(
+        billing_lines.build(
           charge_checklist: cc,
           charge_checklist_item: li,
+          medicine_id: med&.id,
           date: cc.performed_on,
           category: ci.charge_category&.name,
           item_code: med&.item_code,
@@ -46,14 +47,13 @@ class Billing < ApplicationRecord
           quantity: qty,
           unit_price_cents: unit_cents,
           amount_cents: unit_cents * qty,
-          metadata: med ? { "medicine_id" => med.id } : {}
+          metadata: {}
         )
       end
     end
 
     save!
     recalc_totals!
-    lines
   end
 
   private

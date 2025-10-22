@@ -4,6 +4,7 @@ class CreateBillingLines < ActiveRecord::Migration[8.1]
       t.references :billing, null: false, foreign_key: true
       t.references :charge_checklist, null: false, foreign_key: true
       t.references :charge_checklist_item, null: false, foreign_key: true
+      t.references :medicine, null: true, foreign_key: true
       t.date :date
       t.string :category
       t.string :item_code

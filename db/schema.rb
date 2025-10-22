@@ -35,6 +35,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_22_105501) do
     t.string "dosage"
     t.string "frequency"
     t.string "item_code"
+    t.bigint "medicine_id"
     t.jsonb "metadata", default: {}, null: false
     t.string "name"
     t.integer "quantity", default: 0, null: false
@@ -47,6 +48,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_22_105501) do
     t.index ["charge_checklist_id"], name: "index_billing_lines_on_charge_checklist_id"
     t.index ["charge_checklist_item_id"], name: "index_billing_lines_on_charge_checklist_item_id"
     t.index ["item_code"], name: "index_billing_lines_on_item_code"
+    t.index ["medicine_id"], name: "index_billing_lines_on_medicine_id"
   end
 
   create_table "billings", force: :cascade do |t|
@@ -86,7 +88,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_22_105501) do
     t.integer "total_cents"
     t.integer "unit_price_cents"
     t.datetime "updated_at", null: false
-    t.index ["charge_checklist_id", "charge_item_id"], name: "idx_on_charge_checklist_id_charge_item_id_d5f34a8668", unique: true
+    t.index ["charge_checklist_id", "charge_item_id"], name: "idx_on_charge_checklist_id_charge_item_id_d5f34a8668"
     t.index ["charge_checklist_id"], name: "index_charge_checklist_items_on_charge_checklist_id"
     t.index ["charge_item_id"], name: "index_charge_checklist_items_on_charge_item_id"
   end
@@ -171,6 +173,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_22_105501) do
   add_foreign_key "billing_lines", "billings"
   add_foreign_key "billing_lines", "charge_checklist_items"
   add_foreign_key "billing_lines", "charge_checklists"
+  add_foreign_key "billing_lines", "medicines"
   add_foreign_key "billings", "patients"
   add_foreign_key "charge_checklist_items", "charge_checklists"
   add_foreign_key "charge_checklist_items", "charge_items"

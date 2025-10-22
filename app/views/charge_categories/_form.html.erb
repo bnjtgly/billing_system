@@ -13,20 +13,20 @@
 
   <div class="my-5">
     <%= form.label :name %>
-    <%= form.text_field :name, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": charge_category.errors[:name].none?, "border-red-400 focus:outline-red-600": charge_category.errors[:name].any?}] %>
+    <%= form.text_field :name, class: ["input input-bordered w-full", {"border-gray-400 focus:outline-blue-600": charge_category.errors[:name].none?, "border-red-400 focus:outline-red-600": charge_category.errors[:name].any?}] %>
   </div>
 
   <div class="my-5">
     <%= form.label :key %>
-    <%= form.text_field :key, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": charge_category.errors[:key].none?, "border-red-400 focus:outline-red-600": charge_category.errors[:key].any?}] %>
+    <%= form.text_field :key, class: ["input input-bordered w-full", {"border-gray-400 focus:outline-blue-600": charge_category.errors[:key].none?, "border-red-400 focus:outline-red-600": charge_category.errors[:key].any?}] %>
   </div>
 
   <div class="my-5">
     <%= form.label :position %>
-    <%= form.number_field :position, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": charge_category.errors[:position].none?, "border-red-400 focus:outline-red-600": charge_category.errors[:position].any?}] %>
+    <%= form.number_field :position, class: ["input input-bordered w-full", {"border-gray-400 focus:outline-blue-600": charge_category.errors[:position].none?, "border-red-400 focus:outline-red-600": charge_category.errors[:position].any?}] %>
   </div>
 
   <div class="inline">
-    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+    <%= form.submit class: "btn btn-primary" %>
   </div>
 <% end %>
