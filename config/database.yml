@@ -25,7 +25,7 @@ development:
   database: amosup_billing_development
   username: postgres
   password: postgres
-  host: localhost
+  host: db
   port: 5432
 
   # The specified database role being used to connect to PostgreSQL.
