@@ -1,15 +1,60 @@
-<% content_for :title, "Showing charge item" %>
+<% content_for :title, (@charge_item.present? ? "Item • #{@charge_item.name}" : "Item") %>
 
-<div class="md:w-2/3 w-full">
+<div class="max-w-5xl mx-auto px-4 py-6 space-y-6">
   <% if notice.present? %>
-    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
+    <p class="py-2 px-3 bg-green-50 text-green-700 border border-green-200 mb-2 rounded-md inline-block" id="notice"><%= notice %></p>
   <% end %>
 
-  <h1 class="font-bold text-4xl">Showing charge item</h1>
+  <div class="flex items-start justify-between">
+    <div class="min-w-0">
+      <h1 class="text-xl font-semibold text-gray-900">Charge Item</h1>
+      <div class="mt-1 text-sm text-gray-600 flex flex-wrap gap-x-3 gap-y-1">
+        <span><%= @charge_item.name %></span>
+        <% if @charge_item.charge_category %>
+          <span>Category: <%= link_to @charge_item.charge_category.name, @charge_item.charge_category, class: 'text-indigo-700 hover:underline' %></span>
+        <% end %>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <%= link_to "Edit", edit_charge_item_path(@charge_item), class: "btn btn-secondary" %>
+      <%= link_to "Back", charge_items_path, class: "btn btn-outline" %>
+      <%= button_to "Delete", @charge_item, method: :delete, form_class: "btn btn-error text-white", data: { turbo_confirm: "Are you sure?" } %>
+    </div>
+  </div>
 
-  <%= render @charge_item %>
-
-  <%= link_to "Edit this charge item", edit_charge_item_path(@charge_item), class: "btn btn-secondary" %>
-  <%= link_to "Back to charge items", charge_items_path, class: "btn btn-outline" %>
-  <%= button_to "Destroy this charge item", @charge_item, method: :delete, form_class: "sm:inline-block mt-2 sm:mt-0 sm:ml-2", class: "btn btn-error", data: { turbo_confirm: "Are you sure?" } %>
+  <div class="bg-white rounded-lg shadow p-6">
+    <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Details</h2>
+    <dl class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+      <div>
+        <dt class="text-xs text-gray-500">Name</dt>
+        <dd class="text-sm text-gray-900"><%= @charge_item.name %></dd>
+      </div>
+      <div>
+        <dt class="text-xs text-gray-500">Category</dt>
+        <dd class="text-sm text-indigo-700">
+          <% if @charge_item.charge_category %>
+            <%= link_to @charge_item.charge_category.name, @charge_item.charge_category, class: 'hover:underline' %>
+          <% else %>
+            —
+          <% end %>
+        </dd>
+      </div>
+      <div>
+        <dt class="text-xs text-gray-500">Unit</dt>
+        <dd class="text-sm text-gray-900"><%= @charge_item.unit %></dd>
+      </div>
+      <div>
+        <dt class="text-xs text-gray-500">Default price</dt>
+        <dd class="text-sm text-gray-900"><%= number_to_currency(@charge_item.default_price_cents.to_i / 100.0) %></dd>
+      </div>
+      <div>
+        <dt class="text-xs text-gray-500">Position</dt>
+        <dd class="text-sm text-gray-900"><%= @charge_item.position %></dd>
+      </div>
+      <div>
+        <dt class="text-xs text-gray-500">Active</dt>
+        <dd class="text-sm text-gray-900"><%= @charge_item.active ? 'Yes' : 'No' %></dd>
+      </div>
+    </dl>
+  </div>
 </div>
