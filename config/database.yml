@@ -91,9 +91,13 @@ test:
 production:
   primary: &primary_production
     <<: *default
+    adapter: postgresql
+    host: 127.0.0.1
+    port: 5432
     database: amosup_billing_production
-    username: amosup_billing
-    password: <%= ENV["AMOSUP_BILLING_DATABASE_PASSWORD"] %>
+    username: postgres
+    password: postgres
+    pool: 5
   cache:
     <<: *primary_production
     database: amosup_billing_production_cache
