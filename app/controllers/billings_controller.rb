@@ -8,7 +8,7 @@ class BillingsController < ApplicationController
                   .order(statement_date: :desc, created_at: :desc)
 
     if params[:q].present?
-      q = "%#{params[:q].downcase}%"
+      q = "%#{params[:q].downcase.strip}%"
       @billings = @billings.where(
         "LOWER(billings.statement_number) LIKE :q
        OR LOWER(patients.first_name) LIKE :q
@@ -25,7 +25,10 @@ class BillingsController < ApplicationController
   end
 
   def show
-    @lines = @billing.billing_lines.order(:date, :id)
+    @lines = @billing
+               .billing_lines
+               .includes(:medicine, charge_checklist: :user)
+               .order(:date, :id)
   end
 
   # Selection page (GET /billings/new?patient_id=...)
@@ -127,7 +130,9 @@ class BillingsController < ApplicationController
   private
 
   def set_billing
-    @billing = Billing.includes(:patient, :billing_lines).find(params[:id])
+    @billing = Billing
+                 .includes(:patient, billing_lines: [:medicine, { charge_checklist: :user }])
+                 .find(params[:id])
   end
 
   def billing_params

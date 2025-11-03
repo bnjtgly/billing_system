@@ -1,21 +1,27 @@
 <% if defined?(authenticated?) && authenticated? %>
-  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b">
-    <div class="max-w-7xl mx-auto px-4">
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur shadow-[0_2px_10px_rgba(0,0,0,0.15)]">
+  <div class="max-w-7xl mx-auto px-4">
       <div class="h-14 flex items-center justify-between">
         <!-- Brand + desktop nav -->
         <div class="flex items-center gap-6">
-          <%= link_to "AMOSUP Billing", root_path, class: "text-base font-semibold tracking-tight text-gray-900" %>
+          <%= link_to root_path, class: "flex items-center gap-2" do %>
+            <img src="/icon.png"
+                 alt="AMOSUP Logo"
+                 class="h-6 w-auto object-contain align-middle block"
+                 style="max-height: 1.5rem; filter: brightness(0) saturate(100%) invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg);">
+            <span class="text-base font-semibold tracking-tight text-gray-900">AMOSUP Billing</span>
+          <% end %>
 
           <nav class="hidden md:flex items-center gap-2 text-sm">
             <%= link_to "Home", root_path,
-                        class: "btn btn-ghost btn-sm #{'btn-active' if current_page?(root_path)}" %>
+                        class: "btn btn-ghost btn-md #{'btn-active' if current_page?(root_path)}" %>
 
             <%= link_to "Patients", patients_path,
-                        class: "btn btn-ghost btn-sm #{'btn-active' if current_page?(patients_path)}" %>
+                        class: "btn btn-ghost btn-md #{'btn-active' if current_page?(patients_path)}" %>
 
             <!-- Checklist dropdown -->
             <div class="dropdown dropdown-hover">
-              <div tabindex="0" role="button" class="btn btn-ghost btn-sm m-1">
+              <div tabindex="0" role="button" class="btn btn-ghost btn-md m-1">
                 Checklist
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-1 opacity-70" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd"/>
@@ -29,10 +35,10 @@
             </div>
 
             <%= link_to "Medicines", medicines_path,
-                        class: "btn btn-ghost btn-sm #{'btn-active' if current_page?(medicines_path)}" %>
+                        class: "btn btn-ghost btn-md #{'btn-active' if current_page?(medicines_path)}" %>
 
             <%= link_to "Billing", (respond_to?(:billings_path) ? billings_path : '#'),
-                        class: "btn btn-ghost btn-sm #{'btn-active' if defined?(billings_path) && current_page?(billings_path)}" %>
+                        class: "btn btn-ghost btn-md #{'btn-active' if defined?(billings_path) && current_page?(billings_path)}" %>
           </nav>
         </div>
 

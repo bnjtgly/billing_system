@@ -1,6 +1,32 @@
 class PatientsController < ApplicationController
   before_action :set_patient, only: %i[ show edit update destroy ]
 
+  # Lightweight async lookup for combobox
+  def lookup
+    q = params[:q].to_s.strip
+    if q.length < 2
+      render json: [] and return
+    end
+
+    like = "%#{q.downcase}%"
+    patients = Patient
+                 .where("LOWER(first_name) LIKE :q OR LOWER(last_name) LIKE :q OR LOWER(CONCAT(last_name,' ',first_name)) LIKE :q", q: like)
+                 .order(:last_name, :first_name)
+                 .limit(20)
+
+    render json: patients.map { |p|
+      subtitle_parts = []
+      subtitle_parts << p.gender.to_s.titleize if p.gender.present?
+      if p.date_of_birth.present?
+        dob = p.date_of_birth
+        now = Date.current
+        age = now.year - dob.year - ((now.month > dob.month || (now.month == dob.month && now.day >= dob.day)) ? 0 : 1)
+        subtitle_parts << "#{age} yrs"
+      end
+      { id: p.id, label: "#{p.last_name}, #{p.first_name}", subtitle: subtitle_parts.join(' • ') }
+    }
+  end
+
   # GET /patients or /patients.json
   def index
     @patients = Patient.all
@@ -8,6 +34,8 @@ class PatientsController < ApplicationController
 
   # GET /patients/1 or /patients/1.json
   def show
+    @billings = @patient.billings.order(statement_date: :desc, created_at: :desc).limit(5)
+    @checklists = @patient.charge_checklists.order(performed_on: :desc, created_at: :desc).limit(5)
   end
 
   # GET /patients/new

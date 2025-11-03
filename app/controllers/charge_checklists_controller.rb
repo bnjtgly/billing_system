@@ -3,7 +3,21 @@ class ChargeChecklistsController < ApplicationController
 
   # GET /charge_checklists or /charge_checklists.json
   def index
-    @charge_checklists = ChargeChecklist.all
+    @charge_checklists = ChargeChecklist
+                           .includes(:patient)
+                           .joins(:patient)
+                           .order(created_at: :desc)
+
+    if params[:q].present?
+      q = "%#{params[:q].downcase.strip}%"
+      @charge_checklists = @charge_checklists.where(
+        "LOWER(patients.first_name) LIKE :q
+       OR LOWER(patients.last_name) LIKE :q
+       OR LOWER(CONCAT(patients.first_name, ' ', patients.last_name)) LIKE :q
+       OR LOWER(CONCAT(patients.last_name, ' ', patients.first_name)) LIKE :q",
+        q: q
+      )
+    end
   end
 
   # GET /charge_checklists/1 or /charge_checklists/1.json
@@ -25,6 +39,7 @@ class ChargeChecklistsController < ApplicationController
   # POST /charge_checklists or /charge_checklists.json
   def create
     @charge_checklist = ChargeChecklist.new(charge_checklist_params)
+    @charge_checklist.user_id ||= Current.user&.id
 
     if @charge_checklist.save
       respond_to do |format|
@@ -76,7 +91,7 @@ class ChargeChecklistsController < ApplicationController
     def charge_checklist_params
       params.require(:charge_checklist).permit(
         :patient_id, :performed_on, :notes, :metadata,
-        line_items_attributes: [:id, :charge_item_id, :quantity, :unit_price_cents, :metadata, :_destroy]
+        line_items_attributes: [:id, :charge_item_id, :medicine_id, :quantity, :unit_price_cents, :metadata, :_destroy]
       )
     end
 

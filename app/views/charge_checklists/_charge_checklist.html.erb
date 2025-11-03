@@ -8,6 +8,14 @@
     <%= charge_checklist.performed_on %>
   </div>
   <div>
+    <strong class="block font-medium mb-1">Issued By:</strong>
+    <%= "#{charge_checklist.user&.complete_name}" %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Transaction:</strong>
+    <%= "#{charge_checklist.issued}" %>
+  </div>
+  <div>
     <strong class="block font-medium mb-1">Notes:</strong>
     <%= charge_checklist.notes %>
   </div>

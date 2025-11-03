@@ -5,7 +5,11 @@ Rails.application.routes.draw do
   resources :charge_checklists
   resource :session, only: %i[new create destroy]
   resources :passwords, only: %i[new create edit update], param: :token
-  resources :patients
+  resources :patients do
+    collection do
+      get :lookup
+    end
+  end
   resources :billings do
     collection do
       get :new_from_checklists

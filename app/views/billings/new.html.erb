@@ -3,27 +3,64 @@
 <div class="max-w-4xl mx-auto space-y-6">
   <h1 class="font-bold text-2xl">Create billing statement</h1>
 
-  <div class="rounded-lg border border-gray-200 bg-white p-4">
-    <%= form_with url: new_billing_path, method: :get, local: true, class: "grid grid-cols-1 sm:grid-cols-3 gap-4" do %>
+  <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-md">
+    <%= form_with url: new_billing_path, method: :get, local: true,
+                  data: { controller: "debounced-submit", "debounced-submit-delay-value": 0 },
+                  class: "grid grid-cols-1 sm:grid-cols-3 gap-4" do %>
       <div class="sm:col-span-2">
         <label class="block text-sm font-medium mb-1">Patient</label>
-        <%= select_tag :patient_id,
-                       options_for_select(
-                         @patients.map { |p| [ "#{p.last_name}, #{p.first_name}", p.id ] },
-                         params[:patient_id]
-                       ),
-                       include_blank: "Select patient",
-                       class: "select select-bordered w-full" %>
+        <div class="relative" data-controller="patient-lookup">
+          <input type="text" placeholder="Search patient…"
+                 class="input input-bordered w-full pr-10"
+                 value="<%= @patient ? "#{@patient.last_name}, #{@patient.first_name}" : '' %>"
+                 data-patient-lookup-target="input"
+                 data-action="input->patient-lookup#onInput focus->patient-lookup#onFocus keydown->patient-lookup#onKeydown" />
+          <input type="hidden" name="patient_id" value="<%= params[:patient_id] %>" data-patient-lookup-target="hidden" />
+          <div class="absolute left-0 right-0 mt-1 rounded-md bg-white z-10 hidden shadow-[0_2px_10px_rgba(0,0,0,0.15)]" data-patient-lookup-target="list"></div>
+        </div>
       </div>
-      <div class="flex items-end">
-        <%= submit_tag "Load checklists", class: "btn btn-accent" %>
+      <div class="flex items-end self-end">
+        <%= submit_tag "Load checklists", class: "btn btn-accent", disabled: params[:patient_id].blank? %>
+      </div>
+      <div class="sm:col-span-3">
+        <p class="mt-1 text-xs text-gray-500">Tip: selecting a patient auto-loads their checklists.</p>
       </div>
     <% end %>
   </div>
 
   <% if @patient %>
-    <div class="rounded-lg border border-gray-200 bg-white">
-      <div class="px-4 py-2 border-b font-semibold">Select charge checklists for <%= [@patient.first_name, @patient.last_name].join(" ") %></div>
+    <!-- Patient mini card -->
+    <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-md">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-sm text-gray-500">Patient</div>
+          <div class="font-semibold text-lg"><%= [@patient.first_name, @patient.last_name].compact.join(" ") %></div>
+          <div class="text-sm text-gray-600">
+            <% age = begin
+              if @patient.date_of_birth.present?
+                now = Date.current
+                dob = @patient.date_of_birth
+                a = now.year - dob.year
+                a -= 1 if Date.new(now.year, dob.month, dob.day) > now
+                a
+              end
+            end %>
+            <% parts = [] %>
+            <% parts << @patient.gender.to_s.titleize if @patient.gender.present? %>
+            <% parts << "#{age} yrs" if age.present? %>
+            <% parts << @patient.phone_number if @patient.phone_number.present? %>
+            <% parts << @patient.email if @patient.email.present? %>
+            <%= parts.join(" • ") %>
+          </div>
+        </div>
+        <div>
+          <%= link_to "View profile", (@patient.respond_to?(:id) ? url_for(@patient) : "#"), class: "btn btn-secondary btn-sm" %>
+        </div>
+      </div>
+    </div>
+
+    <div class="rounded-lg border border-gray-200 bg-white shadow-md">
+      <div class="px-4 py-2 border-b border-dotted font-semibold">Select Checklist for <%= [@patient.first_name, @patient.last_name].join(" ") %></div>
       <div class="p-4">
         <%= form_with url: billings_path, method: :post, local: true, class: "space-y-4" do %>
           <%= hidden_field_tag "billing[patient_id]", @patient.id %>
@@ -35,7 +72,9 @@
                 <tr>
                   <th class="px-3 py-2 w-10"></th>
                   <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Performed on</th>
+                  <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Issued By</th>
                   <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Items</th>
+                  <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Status</th>
                   <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Notes</th>
                 </tr>
                 </thead>
@@ -46,7 +85,22 @@
                       <%= check_box_tag "billing[checklist_ids][]", cc.id, false, class: "rounded border-gray-300" %>
                     </td>
                     <td class="px-3 py-2 whitespace-nowrap"><%= defined?(l) ? (cc.performed_on) : cc.performed_on %></td>
+                    <td class="px-3 py-2 whitespace-nowrap"><%= cc.user&.complete_name %></td>
                     <td class="px-3 py-2"><%= cc.line_items.size %></td>
+                    <td class="px-3 py-2">
+                      <% billing_status = cc.billings.first&.status %>
+                      <% if billing_status.present? %>
+                          <span class="text-xs px-2 py-0.5 rounded-full <%= {
+                                                                              'draft' => 'bg-amber-50 text-amber-700 ring-1 ring-amber-200',
+                                                                              'issued' => 'bg-green-50 text-green-700 ring-1 ring-green-200',
+                                                                              'void' => 'bg-red-50 text-red-700 ring-1 ring-red-200'
+                                                                            }[billing_status] %>">
+                            <%= billing_status.titleize %>
+                          </span>
+                                            <% else %>
+                                              <span class="text-xs text-gray-400">—</span>
+                                            <% end %>
+                    </td>
                     <td class="px-3 py-2 truncate max-w-[24rem]" title="<%= cc.notes %>"><%= cc.notes %></td>
                   </tr>
                 <% end %>
@@ -54,11 +108,14 @@
               </table>
             </div>
           <% else %>
-            <div class="text-sm text-gray-600">No checklists for this patient.</div>
+            <div class="text-sm text-gray-600">No checklists for this patient. Create One <%= link_to "New charge checklist",
+                                                                                                      new_charge_checklist_path(patient_id: @billing.patient_id),
+                                                                                                      class: "ml-2 btn btn-primary btn-sm shadow-md" %>
+            </div>
           <% end %>
 
           <div>
-            <%= submit_tag "Generate billing", class: "rounded-md px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium" %>
+            <%= submit_tag "Generate Billing", class: "btn btn-accent" %>
           </div>
         <% end %>
       </div>

@@ -5,7 +5,7 @@
     <h1 class="text-2xl font-semibold">Billing statement</h1>
     <div class="flex items-center gap-2 print:hidden">
       <% if @billing.draft? %>
-        <%= button_to "Mark as issued",
+        <%= button_to "Mark as Complete",
                       issue_billing_path(@billing),
                       method: :patch,
                       data: { turbo_confirm: "Issue this billing?" },
@@ -17,7 +17,7 @@
     </div>
   </div>
 
-  <div class="bg-white border border-gray-200 rounded-lg p-4">
+  <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-md">
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
       <div>
         <div class="font-semibold">Patient name</div>
@@ -39,14 +39,12 @@
     </div>
   </div>
 
-  <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
-    <div class="px-4 py-2 border-b font-semibold">Details</div>
+  <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-md">
     <div class="overflow-x-auto">
       <table class="min-w-full text-sm">
         <thead class="bg-gray-50 text-gray-700">
-        <tr>
+        <tr class="px-3">
           <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Date</th>
-          <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Categ</th>
           <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Item code</th>
           <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Drug / Item name</th>
           <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Route</th>
@@ -55,41 +53,58 @@
           <th class="px-3 py-2 text-right uppercase tracking-wide text-xs font-semibold">Qty</th>
           <th class="px-3 py-2 text-right uppercase tracking-wide text-xs font-semibold">Price</th>
           <th class="px-3 py-2 text-right uppercase tracking-wide text-xs font-semibold">Amount</th>
+          <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Transaction</th>
+          <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Issued By</th>
         </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
-        <% @billing.billing_lines.order(:date, :id).each do |ln| %>
+        <% @lines.each do |ln| %>
           <tr class="hover:bg-gray-50">
             <td class="px-3 py-2 whitespace-nowrap"><%= ln.date %></td>
-            <td class="px-3 py-2 whitespace-nowrap"><%= ln.category %></td>
-            <td class="px-3 py-2 whitespace-nowrap"><%= ln.item_code %></td>
-            <td class="px-3 py-2"><%= ln.name %></td>
+            <td class="px-3 py-2 whitespace-nowrap"><%= ln.medicine_id.present? ? ln.item_code : ln.charge_item&.charge_category&.name %></td>
+            <td class="px-3 py-2"><%= ln.medicine_id.present? ? ln.medicine&.drug_name : ln.charge_item&.name %></td>
             <td class="px-3 py-2 whitespace-nowrap"><%= ln.route || ln.medicine&.route %></td>
             <td class="px-3 py-2 whitespace-nowrap"><%= ln.frequency || ln.medicine&.frequency %></td>
             <td class="px-3 py-2 whitespace-nowrap"><%= ln.dosage || ln.medicine&.dosage || ln.medicine&.strength %></td>
             <td class="px-3 py-2 text-right whitespace-nowrap"><%= ln.quantity %></td>
-            <td class="px-3 py-2 text-right whitespace-nowrap"><%= number_to_currency(ln.unit_price_cents.to_i / 100.0) %></td>
-            <td class="px-3 py-2 text-right whitespace-nowrap"><%= number_to_currency(ln.amount_cents.to_i / 100.0) %></td>
+            <td class="px-3 py-2 text-right whitespace-nowrap"><%= number_to_currency(ln.unit_price_cents.to_i / 100.0, unit: "₱") %></td>
+            <td class="px-3 py-2 text-right whitespace-nowrap"><%= number_to_currency(ln.amount_cents.to_i / 100.0, unit: "₱") %></td>
+            <td class="px-3 py-2 whitespace-nowrap"><%= ln.charge_checklist&.issued %></td>
+            <td class="px-3 py-2 whitespace-nowrap"><%= ln.charge_checklist&.user&.complete_name %></td>
           </tr>
         <% end %>
         </tbody>
-        <tfoot class="bg-gray-50">
+        <tfoot>
         <tr>
-          <td colspan="8"></td>
-          <td class="px-3 py-2 text-right font-semibold">Subtotal</td>
-          <td class="px-3 py-2 text-right font-semibold"><%= number_to_currency(@billing.subtotal_cents.to_i / 100.0) %></td>
+          <td colspan="7"></td>
+          <td class="px-3 py-2 text-right font-semibold whitespace-nowrap">Total Posted:</td>
+          <td class="px-3 py-2 text-right font-semibold">
+            <%= number_to_currency(@billing.subtotal_cents.to_i / 100.0, unit: "₱") %>
+          </td>
         </tr>
         <tr>
-          <td colspan="8"></td>
+          <td colspan="7"></td>
+          <td class="px-3 py-2 text-right font-semibold whitespace-nowrap">Total Returned:</td>
+          <td class="px-3 py-2 text-right font-semibold">
+            <%= number_to_currency(0.00, unit: "₱") %>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="7"></td>
           <td class="px-3 py-2 text-right font-semibold">Discount</td>
-          <td class="px-3 py-2 text-right font-semibold"><%= number_to_currency(@billing.discount_cents.to_i / 100.0) %></td>
+          <td class="px-3 py-2 text-right font-semibold">
+            <%= number_to_currency(@billing.discount_cents.to_i / 100.0, unit: "₱") %>
+          </td>
         </tr>
         <tr>
-          <td colspan="8"></td>
+          <td colspan="7"></td>
           <td class="px-3 py-2 text-right font-semibold">Total</td>
-          <td class="px-3 py-2 text-right font-semibold"><%= number_to_currency(@billing.total_cents.to_i / 100.0) %></td>
+          <td class="px-3 py-2 text-right font-semibold">
+            <%= number_to_currency(@billing.total_cents.to_i / 100.0, unit: "₱") %>
+          </td>
         </tr>
         </tfoot>
+
       </table>
     </div>
   </div>

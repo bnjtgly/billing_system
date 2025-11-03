@@ -43,6 +43,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_22_105501) do
     t.string "unit"
     t.integer "unit_price_cents", default: 0, null: false
     t.datetime "updated_at", null: false
+    t.index ["billing_id", "charge_checklist_item_id"], name: "idx_unique_billing_line_per_cc_item", unique: true
     t.index ["billing_id", "date"], name: "index_billing_lines_on_billing_id_and_date"
     t.index ["billing_id"], name: "index_billing_lines_on_billing_id"
     t.index ["charge_checklist_id"], name: "index_billing_lines_on_charge_checklist_id"
@@ -83,6 +84,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_22_105501) do
     t.bigint "charge_checklist_id", null: false
     t.bigint "charge_item_id", null: false
     t.datetime "created_at", null: false
+    t.bigint "medicine_id"
     t.jsonb "metadata", default: {}
     t.integer "quantity"
     t.integer "total_cents"
@@ -91,16 +93,20 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_22_105501) do
     t.index ["charge_checklist_id", "charge_item_id"], name: "idx_on_charge_checklist_id_charge_item_id_d5f34a8668"
     t.index ["charge_checklist_id"], name: "index_charge_checklist_items_on_charge_checklist_id"
     t.index ["charge_item_id"], name: "index_charge_checklist_items_on_charge_item_id"
+    t.index ["medicine_id"], name: "index_charge_checklist_items_on_medicine_id"
   end
 
   create_table "charge_checklists", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.string "issued", default: ""
     t.jsonb "metadata", default: {}
     t.text "notes"
     t.bigint "patient_id", null: false
     t.date "performed_on"
     t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
     t.index ["patient_id"], name: "index_charge_checklists_on_patient_id"
+    t.index ["user_id"], name: "index_charge_checklists_on_user_id"
   end
 
   create_table "charge_items", force: :cascade do |t|
@@ -151,6 +157,13 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_22_105501) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "roles", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "description"
+    t.string "name"
+    t.datetime "updated_at", null: false
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "ip_address"
@@ -163,9 +176,16 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_22_105501) do
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email_address", null: false
+    t.string "first_name"
+    t.string "gender"
+    t.string "last_name"
+    t.string "middle_name"
     t.string "password_digest", null: false
+    t.bigint "role_id", null: false
+    t.string "status", default: "Active"
     t.datetime "updated_at", null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
+    t.index ["role_id"], name: "index_users_on_role_id"
   end
 
   add_foreign_key "billing_checklists", "billings"
@@ -177,7 +197,10 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_22_105501) do
   add_foreign_key "billings", "patients"
   add_foreign_key "charge_checklist_items", "charge_checklists"
   add_foreign_key "charge_checklist_items", "charge_items"
+  add_foreign_key "charge_checklist_items", "medicines"
   add_foreign_key "charge_checklists", "patients"
+  add_foreign_key "charge_checklists", "users"
   add_foreign_key "charge_items", "charge_categories"
   add_foreign_key "sessions", "users"
+  add_foreign_key "users", "roles"
 end

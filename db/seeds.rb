@@ -11,13 +11,49 @@
 # db/seeds.rb
 
 # -----------------------------
+# Default roles (Rails 8 auth)
+#
+# -----------------------------
+default_roles = [
+  { name: "admin", description: "Full system access including user and data management" },
+  { name: "nurse", description: "Can encode patient billing details, etc" }
+]
+
+default_roles.each do |role_data|
+  Role.find_or_create_by!(name: role_data[:name]) do |role|
+    role.description = role_data[:description]
+  end
+end
+# -----------------------------
 # Default user (Rails 8 auth)
 # -----------------------------
+admin_role = Role.find_or_create_by!(name: "admin") do |role|
+  role.description = "Full system access including user and data management"
+end
+
+nurse_role = Role.find_or_create_by!(name: "nurse") do |role|
+  role.description = "Can encode patient billing details, medicines, and supplies"
+end
+
+# Admin user
 user = User.find_or_initialize_by(email_address: "bnjtgly@gmail.com")
 user.password = "abc123ABC"
 user.password_confirmation = "abc123ABC"
+user.role_id = admin_role.id
+user.first_name = 'Benjie'
+user.last_name = 'Tee'
 user.save!
 puts "Seeded user: #{user.email_address}"
+
+# Nurse user
+nurse_user = User.find_or_initialize_by(email_address: "nurse@amosup.local")
+nurse_user.password = "nurse123"
+nurse_user.password_confirmation = "nurse123"
+nurse_user.role_id = nurse_role.id
+nurse_user.first_name = 'Bea'
+nurse_user.last_name = 'Jee'
+nurse_user.save!
+puts "✅ Seeded user: #{nurse_user.email_address})"
 
 
 # -----------------------------

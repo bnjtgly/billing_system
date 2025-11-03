@@ -22,5 +22,6 @@ class CreateBillingLines < ActiveRecord::Migration[8.1]
     end
     add_index :billing_lines, [:billing_id, :date]
     add_index :billing_lines, :item_code
+    add_index :billing_lines, [:billing_id, :charge_checklist_item_id], unique: true, name: "idx_unique_billing_line_per_cc_item"
   end
 end

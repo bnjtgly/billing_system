@@ -6,15 +6,19 @@
     </div>
   <% end %>
 
+  <div class="flex justify-end">
+    <%= f.submit "Save", class: "btn btn-primary" %>
+  </div>
+
   <!-- Top core fields -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
     <div>
       <label class="block text-sm font-medium mb-1">Patient</label>
-      <%= f.collection_select :patient_id, Patient.order(:last_name, :first_name), :id, ->(p){ [p.last_name, p.first_name].compact.join(", ") }, { include_blank: "Select patient" }, class: "select select-bordered w-full" %>
+      <%= f.collection_select :patient_id, Patient.order(:last_name, :first_name), :id, ->(p){ [p.last_name, p.first_name].compact.join(", ") }, { include_blank: "Select patient" }, class: "select select-bordered w-full", required: true %>
     </div>
     <div>
-      <label class="block text-sm font-medium mb-1">Performed on</label>
-      <%= f.date_field :performed_on, class: "input input-bordered w-full" %>
+      <label class="block text-sm font-medium mb-1 ">Performed on</label>
+      <%= f.date_field :performed_on, class: "input input-bordered w-full", required: true %>
     </div>
     <div>
       <label class="block text-sm font-medium mb-1">Notes</label>
@@ -29,7 +33,7 @@
   <!-- Modern sections, 3 responsive columns -->
   <% categories = Array(@categories) %>
   <% columns = 3; slice_size = [(categories.size / columns.to_f).ceil, 1].max %>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-lg mt-6">
     <% categories.each_slice(slice_size) do |column_categories| %>
       <div class="space-y-6">
         <% column_categories.each do |category| %>
@@ -57,7 +61,7 @@
               <% if category.name == 'Medicines' %>
                 <div class="mt-2" data-controller="med-items">
                   <div class="flex items-center justify-between">
-                    <div class="text-sm text-gray-600">Add medicine</div>
+                    <div class="text-sm text-gray-600"></div>
                     <button type="button"
                             class="btn btn-primary btn-sm"
                             data-action="click->med-items#add"
@@ -77,7 +81,7 @@
                              name="charge_checklist[line_items_attributes][NEW_KEY][quantity]">
 
                       <select class="input input-bordered w-full"
-                              name="charge_checklist[line_items_attributes][NEW_KEY][metadata][medicine_id]"
+                              name="charge_checklist[line_items_attributes][NEW_KEY][medicine_id]"
                               data-action="change->med-items#select">
                         <option value="">Select medicine…</option>
                         <% @medicines.each do |m| %>
@@ -106,6 +110,6 @@
   </div>
 
   <div class="inline">
-    <%= f.submit class: "btn btn-primary" %>
+    <%= f.submit "Save", class: "btn btn-primary" %>
   </div>
 <% end %>
