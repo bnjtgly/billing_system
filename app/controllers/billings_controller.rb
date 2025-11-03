@@ -1,4 +1,5 @@
 class BillingsController < ApplicationController
+  before_action :require_admin!
   before_action :set_billing, only: %i[show edit update destroy issue]
 
   def index

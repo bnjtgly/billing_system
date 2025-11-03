@@ -26,21 +26,23 @@
       <div class="mt-1 text-2xl font-semibold text-gray-900"><%= total_patients %></div>
       <div class="mt-2 text-xs text-gray-500">Total registered</div>
     </div>
-    <div class="bg-white rounded-xl shadow p-5 border border-gray-200">
-      <div class="text-sm text-gray-500">Bills (Issued)</div>
-      <div class="mt-1 text-2xl font-semibold text-gray-900"><%= issued_bills %></div>
-      <div class="mt-2 text-xs text-green-700">Processed</div>
-    </div>
-    <div class="bg-white rounded-xl shadow p-5 border border-gray-200">
-      <div class="text-sm text-gray-500">Bills (Draft)</div>
-      <div class="mt-1 text-2xl font-semibold text-gray-900"><%= draft_bills %></div>
-      <div class="mt-2 text-xs text-yellow-700">Pending</div>
-    </div>
-    <div class="bg-white rounded-xl shadow p-5 border border-gray-200">
-      <div class="text-sm text-gray-500">Revenue (This month)</div>
-      <div class="mt-1 text-2xl font-semibold text-gray-900"><%= number_to_currency((revenue_this_month_cents || 0) / 100.0) %></div>
-      <div class="mt-2 text-xs text-gray-500">From issued bills</div>
-    </div>
+    <% if admin_user? %>
+      <div class="bg-white rounded-xl shadow p-5 border border-gray-200">
+        <div class="text-sm text-gray-500">Bills (Issued)</div>
+        <div class="mt-1 text-2xl font-semibold text-gray-900"><%= issued_bills %></div>
+        <div class="mt-2 text-xs text-green-700">Processed</div>
+      </div>
+      <div class="bg-white rounded-xl shadow p-5 border border-gray-200">
+        <div class="text-sm text-gray-500">Bills (Draft)</div>
+        <div class="mt-1 text-2xl font-semibold text-gray-900"><%= draft_bills %></div>
+        <div class="mt-2 text-xs text-yellow-700">Pending</div>
+      </div>
+      <div class="bg-white rounded-xl shadow p-5 border border-gray-200">
+        <div class="text-sm text-gray-500">Revenue (This month)</div>
+        <div class="mt-1 text-2xl font-semibold text-gray-900"><%= number_to_currency((revenue_this_month_cents || 0) / 100.0) %></div>
+        <div class="mt-2 text-xs text-gray-500">From issued bills</div>
+      </div>
+    <% end %>
   </div>
 
   <!-- Quick links -->
@@ -68,39 +70,41 @@
 
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     <!-- Recent bills -->
-    <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-      <div class="px-4 py-2 border-b font-semibold flex items-center justify-between">
-        <span>Recent bills</span>
-        <%= link_to "New Billing", new_billing_path, class: "text-sm text-indigo-600 hover:text-indigo-700" %>
-      </div>
-      <div class="overflow-x-auto">
-        <table class="min-w-full text-sm">
-          <thead class="bg-gray-50 text-gray-700">
-          <tr>
-            <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Statement #</th>
-            <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Patient</th>
-            <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Date</th>
-            <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Status</th>
-            <th class="px-3 py-2 text-right uppercase tracking-wide text-xs font-semibold">Total</th>
-          </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200">
-          <% Billing.order(statement_date: :desc, created_at: :desc).limit(8).each do |b| %>
-            <tr class="hover:bg-gray-50">
-              <td class="px-3 py-2 whitespace-nowrap font-medium text-indigo-700"><%= link_to b.statement_number, billing_path(b), class: "hover:underline" %></td>
-              <td class="px-3 py-2 whitespace-nowrap"><%= [b.patient&.first_name, b.patient&.last_name].compact.join(" ") %></td>
-              <td class="px-3 py-2 whitespace-nowrap"><%= defined?(l) ? l(b.statement_date) : b.statement_date %></td>
-              <td class="px-3 py-2 whitespace-nowrap">
-                <% status_color = b.status == "issued" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700" %>
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= status_color %>"><%= b.status.to_s.titleize %></span>
-              </td>
-              <td class="px-3 py-2 whitespace-nowrap text-right"><%= number_to_currency((b.total_cents || 0) / 100.0) %></td>
+    <% if admin_user? %>
+      <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+        <div class="px-4 py-2 border-b font-semibold flex items-center justify-between">
+          <span>Recent bills</span>
+          <%= link_to "New Billing", new_billing_path, class: "text-sm text-indigo-600 hover:text-indigo-700" %>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead class="bg-gray-50 text-gray-700">
+            <tr>
+              <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Statement #</th>
+              <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Patient</th>
+              <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Date</th>
+              <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Status</th>
+              <th class="px-3 py-2 text-right uppercase tracking-wide text-xs font-semibold">Total</th>
             </tr>
-          <% end %>
-          </tbody>
-        </table>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+            <% Billing.order(statement_date: :desc, created_at: :desc).limit(8).each do |b| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-3 py-2 whitespace-nowrap font-medium text-indigo-700"><%= link_to b.statement_number, billing_path(b), class: "hover:underline" %></td>
+                <td class="px-3 py-2 whitespace-nowrap"><%= [b.patient&.first_name, b.patient&.last_name].compact.join(" ") %></td>
+                <td class="px-3 py-2 whitespace-nowrap"><%= defined?(l) ? l(b.statement_date) : b.statement_date %></td>
+                <td class="px-3 py-2 whitespace-nowrap">
+                  <% status_color = b.status == "issued" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700" %>
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= status_color %>"><%= b.status.to_s.titleize %></span>
+                </td>
+                <td class="px-3 py-2 whitespace-nowrap text-right"><%= number_to_currency((b.total_cents || 0) / 100.0) %></td>
+              </tr>
+            <% end %>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+    <% end %>
 
     <!-- Recent checklists -->
     <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
