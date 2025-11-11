@@ -1,32 +1,42 @@
-<div class="mx-auto md:w-2/3 w-full">
-  <% if alert = flash[:alert] %>
-    <p class="py-2 px-3 bg-red-50 mb-5 text-red-500 font-medium rounded-lg inline-block" id="alert"><%= alert %></p>
-  <% end %>
+<div class="flex items-center">
+  <img src="/icon.png"
+       alt="AMOSUP Logo"
+       class="h-6 w-auto object-contain"
+       style="filter: brightness(0) saturate(100%) invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg);">
+  <h1 class="font-bold text-2xl ml-2">AMOSUP Billing</h1>
+</div>
 
-  <% if notice = flash[:notice] %>
-    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-lg inline-block" id="notice"><%= notice %></p>
-  <% end %>
+<div class="mx-auto min-h-screen flex items-center justify-center">
+  <div class="shadow-xl bg-white shadow-xl/30 rounded-xl p-8 max-w-sm h-96">
+    <% if alert = flash[:alert] %>
+      <p class="py-2 px-3 bg-red-50 mb-5 text-red-500 font-medium rounded-lg inline-block" id="alert"><%= alert %></p>
+    <% end %>
 
-  <h1 class="font-bold text-4xl">Sign in</h1>
+    <% if notice = flash[:notice] %>
+      <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-lg inline-block" id="notice"><%= notice %></p>
+    <% end %>
 
-  <%= form_with url: session_url, class: "contents" do |form| %>
-    <div class="my-5">
-      <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address], class: "input input-bordered w-full" %>
-    </div>
+    <h2 class="font-bold text-2xl">Sign in</h2>
 
-    <div class="my-5">
-      <%= form.password_field :password, required: true, autocomplete: "current-password", placeholder: "••••••", maxlength: 72, class: "input input-bordered w-full" %>
-    </div>
-
-    <div class="col-span-6 sm:flex sm:items-center sm:gap-4">
-      <div class="inline">
-        <%= form.submit "Sign in", class: "btn btn-primary" %>
+    <%= form_with url: session_url, class: "contents" do |form| %>
+      <div class="my-5">
+        <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address], class: "input input-bordered w-full" %>
       </div>
 
-      <div class="mt-4 text-sm text-gray-500 sm:mt-0">
-        <%= link_to "Forgot password?", new_password_path, class: "text-gray-700 underline hover:no-underline" %>
+      <div class="my-5">
+        <%= form.password_field :password, required: true, autocomplete: "current-password", placeholder: "••••••", maxlength: 72, class: "input input-bordered w-full" %>
       </div>
-    </div>
 
-  <% end %>
+      <div class="col-span-6 sm:flex sm:items-center sm:gap-4">
+        <div class="inline">
+          <%= form.submit "Sign in", class: "btn btn-primary" %>
+        </div>
+
+        <div class="mt-4 text-sm text-gray-500 sm:mt-0">
+          <%= link_to "Forgot password?", new_password_path, class: "text-gray-700 underline hover:no-underline" %>
+        </div>
+      </div>
+
+    <% end %>
+  </div>
 </div>
