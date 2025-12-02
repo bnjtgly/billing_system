@@ -38,6 +38,7 @@ class BillingsController < ApplicationController
     @patient = Patient.find_by(id: params[:patient_id]) if params[:patient_id].present?
     @charge_checklists = @patient ? @patient.charge_checklists.order(performed_on: :desc) : []
     @billing = Billing.new(statement_date: Date.current, status: :draft)
+    @charge_checklists_unbilled = ChargeChecklist.where(status: 'unbilled').order(performed_on: :desc)
   end
 
   def edit; end

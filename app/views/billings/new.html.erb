@@ -3,6 +3,53 @@
 <div class="max-w-4xl mx-auto space-y-6">
   <h1 class="font-bold text-2xl">Create billing statement</h1>
 
+  <div class="charge-checklist-list rounded-lg border border-gray-200 bg-white p-4 shadow-md">
+    <div class="px-4 py-2 border-b border-dotted font-semibold">
+      Unbilled Checklists
+    </div>
+    <div class="p-4">
+      <%= form_with url: billings_path, method: :post, local: true, class: "space-y-4" do %>
+
+        <% if @charge_checklists_unbilled.any? %>
+          <div class="overflow-x-auto rounded">
+            <table class="min-w-full text-sm">
+              <thead class="bg-gray-50 text-gray-700">
+              <tr>
+                <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Patient</th>
+                <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Performed on</th>
+                <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Issued By</th>
+                <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Items</th>
+                <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Status</th>
+                <th class="px-3 py-2 text-left uppercase tracking-wide text-xs font-semibold">Notes</th>
+              </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200">
+              <% @charge_checklists_unbilled.each do |cc| %>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-3 py-2 whitespace-nowrap"><%= cc.patient&.complete_name %></td>
+                  <td class="px-3 py-2 whitespace-nowrap"><%= cc.performed_on %></td>
+                  <td class="px-3 py-2 whitespace-nowrap"><%= cc.user&.complete_name %></td>
+                  <td class="px-3 py-2"><%= cc.line_items.size %></td>
+                  <td class="px-3 py-2">
+                    <span class="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 ring-1 ring-gray-200">
+                      <%= cc.status.titleize %>
+                    </span>
+                  </td>
+                  <td class="px-3 py-2 truncate max-w-[24rem]" title="<%= cc.notes %>"><%= cc.notes %></td>
+                </tr>
+              <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <div class="text-sm text-gray-600">
+            No unbilled checklists found.
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
   <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-md">
     <%= form_with url: new_billing_path, method: :get, local: true,
                   data: { controller: "debounced-submit", "debounced-submit-delay-value": 0 },

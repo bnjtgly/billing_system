@@ -11,4 +11,12 @@ class ChargeChecklist < ApplicationRecord
   def mark_as_issued
     update_column(:issued, "Issued") if issued.blank?
   end
+
+  def billed?
+    status == "billed"
+  end
+
+  def unbilled?
+    status == "unbilled"
+  end
 end

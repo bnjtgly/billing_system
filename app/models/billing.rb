@@ -11,6 +11,8 @@ class Billing < ApplicationRecord
 
   enum :status, { draft: "draft", issued: "issued" }
 
+  after_save :mark_associated_checklists_as_billed
+
   def recalc_totals!
     update!(
       subtotal_cents: billing_lines.sum(:amount_cents),
@@ -25,6 +27,10 @@ class Billing < ApplicationRecord
   end
 
   private
+
+  def mark_associated_checklists_as_billed
+    charge_checklists.update_all(status: "billed")
+  end
 
   def extract_medicine_ids(checklists)
     checklists
