@@ -64,7 +64,7 @@
       <div>
         <dt class="text-xs text-gray-500">Total</dt>
         <% total_cents = @charge_checklist.line_items.sum(:total_cents) %>
-        <dd class="text-sm text-gray-900"><%= number_to_currency(total_cents.to_i / 100.0) %></dd>
+        <dd class="text-sm text-gray-900"><%= number_to_currency(total_cents.to_i / 100.0, unit: "₱") %></dd>
       </div>
     </dl>
   </div>
@@ -95,8 +95,8 @@
                 <td class="px-3 py-2"><%= li.display_frequency %></td>
                 <td class="px-3 py-2"><%= li.display_route %></td>
                 <td class="px-3 py-2 text-right"><%= li.quantity %></td>
-                <td class="px-3 py-2 text-right"><%= number_to_currency(li.unit_price_cents.to_i / 100.0) %></td>
-                <td class="px-3 py-2 text-right"><%= number_to_currency(li.total_cents.to_i / 100.0) %></td>
+                <td class="px-3 py-2 text-right"><%= number_to_currency(li.unit_price_cents.to_i / 100.0, unit: "₱") %></td>
+                <td class="px-3 py-2 text-right"><%= number_to_currency(li.total_cents.to_i / 100.0, unit: "₱") %></td>
               </tr>
             <% end %>
           </tbody>

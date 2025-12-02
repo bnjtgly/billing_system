@@ -39,7 +39,7 @@
       </div>
       <div class="bg-white rounded-xl shadow p-5 border border-gray-200">
         <div class="text-sm text-gray-500">Revenue (This month)</div>
-        <div class="mt-1 text-2xl font-semibold text-gray-900"><%= number_to_currency((revenue_this_month_cents || 0) / 100.0) %></div>
+        <div class="mt-1 text-2xl font-semibold text-gray-900"><%= number_to_currency((revenue_this_month_cents || 0) / 100.0, unit: "₱") %></div>
         <div class="mt-2 text-xs text-gray-500">From issued bills</div>
       </div>
     <% end %>
@@ -97,7 +97,7 @@
                   <% status_color = b.status == "issued" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700" %>
                   <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= status_color %>"><%= b.status.to_s.titleize %></span>
                 </td>
-                <td class="px-3 py-2 whitespace-nowrap text-right"><%= number_to_currency((b.total_cents || 0) / 100.0) %></td>
+                <td class="px-3 py-2 whitespace-nowrap text-right"><%= number_to_currency((b.total_cents || 0) / 100.0, unit: "₱") %></td>
               </tr>
             <% end %>
             </tbody>

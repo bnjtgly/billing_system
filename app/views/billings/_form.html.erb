@@ -55,15 +55,15 @@
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
     <div>
       <div class="text-sm text-gray-600">Subtotal</div>
-      <div class="font-semibold"><%= number_to_currency(billing.subtotal_cents.to_i / 100.0) %></div>
+      <div class="font-semibold"><%= number_to_currency(billing.subtotal_cents.to_i / 100.0, unit: "₱") %></div>
     </div>
     <div>
       <div class="text-sm text-gray-600">Discount</div>
-      <div class="font-semibold"><%= number_to_currency(billing.discount_cents.to_i / 100.0) %></div>
+      <div class="font-semibold"><%= number_to_currency(billing.discount_cents.to_i / 100.0, unit: "₱") %></div>
     </div>
     <div>
       <div class="text-sm text-gray-600">Total</div>
-      <div class="font-semibold"><%= number_to_currency(billing.total_cents.to_i / 100.0) %></div>
+      <div class="font-semibold"><%= number_to_currency(billing.total_cents.to_i / 100.0, unit: "₱") %></div>
     </div>
   </div>
 

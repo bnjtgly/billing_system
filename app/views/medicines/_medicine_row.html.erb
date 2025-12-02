@@ -5,7 +5,7 @@
   <td class="px-4 py-3 align-middle whitespace-nowrap"><%= [medicine.form, medicine.strength].compact.join(" / ") %></td>
   <td class="px-4 py-3 align-middle whitespace-nowrap"><%= medicine.unit %></td>
   <td class="px-4 py-3 align-middle whitespace-nowrap">
-    <%= number_to_currency(medicine.unit_price_cents.to_i / 100.0) %>
+    <%= number_to_currency(medicine.unit_price_cents.to_i / 100.0, unit: "₱") %>
   </td>
   <td class="px-4 py-3 align-middle">
     <div class="flex justify-end gap-1.5">
