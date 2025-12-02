@@ -21,12 +21,22 @@ default: &default
 
 
 development:
-  <<: *default
-  database: amosup_billing_development
-  username: postgres
-  password: postgres
-  host: localhost
-  port: 5432
+  primary:
+    <<: *default
+    database: amosup_billing_development
+    username: postgres
+    password: postgres
+    host: localhost
+    port: 5433
+
+  cache:
+    <<: *default
+    database: amosup_billing_development_cache
+    username: postgres
+    password: postgres
+    host: localhost
+    port: 5433
+    migrations_paths: db/cache_migrate
 
   # The specified database role being used to connect to PostgreSQL.
   # To create additional roles in PostgreSQL see `$ createuser --help`.
