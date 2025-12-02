@@ -90,7 +90,8 @@ class ChargeChecklistsController < ApplicationController
     # Only allow a list of trusted parameters through.
     def charge_checklist_params
       params.require(:charge_checklist).permit(
-        :patient_id, :performed_on, :notes, :metadata,
+        :patient_id, :performed_on, :notes,
+        metadata: {},
         line_items_attributes: [:id, :charge_item_id, :medicine_id, :quantity, :unit_price_cents, :metadata, :_destroy]
       )
     end

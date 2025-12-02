@@ -10,21 +10,70 @@
     <%= f.submit "Save", class: "btn btn-primary" %>
   </div>
 
-  <!-- Top core fields -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <div>
-      <label class="block text-sm font-medium mb-1">Patient</label>
-      <%= f.collection_select :patient_id, Patient.order(:last_name, :first_name), :id, ->(p){ [p.last_name, p.first_name].compact.join(", ") }, { include_blank: "Select patient" }, class: "select select-bordered w-full", required: true %>
+  <!-- Top core fields: two columns on >= sm, one row per field -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+    <%# COMMON LABEL WIDTH CLASS - reuse everywhere %>
+    <% label_width = "w-48 md:w-56 lg:w-64 shrink-0 text-right" %>
+
+    <!-- Left column -->
+    <div class="space-y-4">
+      <div class="flex items-center gap-3">
+        <label for="charge_checklist_patient_id" class="text-sm font-medium <%= label_width %>">Patient:</label>
+        <%= f.collection_select :patient_id, Patient.order(:last_name, :first_name), :id, ->(p){ [p.last_name, p.first_name].compact.join(", ") },
+                                { include_blank: "Select patient" },
+                                class: "select select-bordered ml-2", required: true %>
+      </div>
+      <div class="flex items-center gap-3">
+        <label class="text-sm font-medium <%= label_width %>">Room:</label>
+        <%= text_field_tag "charge_checklist[metadata][room]", @charge_checklist.metadata&.dig("room"),
+                           class: "input input-bordered ml-4" %>
+      </div>
+      <div class="flex items-center gap-3">
+        <label class="text-sm font-medium <%= label_width %>">Date:</label>
+        <%= f.date_field :performed_on, class: "input input-bordered ml-5", required: true %>
+      </div>
+      <div class="flex items-center gap-3">
+        <label class="text-sm font-medium <%= label_width %>">Notes:</label>
+        <%= f.text_field :notes, class: "input input-bordered ml-4" %>
+      </div>
     </div>
-    <div>
-      <label class="block text-sm font-medium mb-1 ">Performed on</label>
-      <%= f.date_field :performed_on, class: "input input-bordered w-full", required: true %>
-    </div>
-    <div>
-      <label class="block text-sm font-medium mb-1">Notes</label>
-      <%= f.text_field :notes, class: "input input-bordered w-full" %>
+
+    <!-- Right column -->
+    <div class="space-y-4">
+
+      <div class="flex items-center justify-between gap-3">
+        <label class="text-sm font-medium <%= label_width %>">Surgeon:</label>
+        <%= text_field_tag "charge_checklist[metadata][surgeon]",
+                           @charge_checklist.metadata&.dig("surgeon"),
+                           class: "input input-bordered w-64" %>
+      </div>
+
+      <div class="flex items-center justify-between gap-3">
+        <label class="text-sm font-medium <%= label_width %>">Assistant Surgeon:</label>
+        <%= text_field_tag "charge_checklist[metadata][assistant_surgeon]",
+                           @charge_checklist.metadata&.dig("assistant_surgeon"),
+                           class: "input input-bordered w-64" %>
+      </div>
+
+      <div class="flex items-center justify-between gap-3">
+        <label class="text-sm font-medium <%= label_width %>">Anesthesiologist/Anesthesia:</label>
+        <%= text_field_tag "charge_checklist[metadata][anesthesiologist_anesthesia]",
+                           @charge_checklist.metadata&.dig("anesthesiologist_anesthesia"),
+                           class: "input input-bordered w-64" %>
+      </div>
+
+      <div class="flex items-center justify-between gap-3">
+        <label class="text-sm font-medium <%= label_width %>">Staff Nurse & Scrub Tech:</label>
+        <%= text_field_tag "charge_checklist[metadata][staff_nurse_and_scrub_tech]",
+                           @charge_checklist.metadata&.dig("staff_nurse_and_scrub_tech"),
+                           class: "input input-bordered w-64" %>
+      </div>
+
     </div>
   </div>
+
+
 
   <% items_by_category = @charge_checklist.line_items
                                           .sort_by { |li| [li.charge_item.charge_category&.position || 0, li.charge_item.position || 0, li.charge_item.name] }
@@ -62,6 +111,10 @@
                 <div class="mt-2" data-controller="med-items">
                   <div class="flex items-center justify-between">
                     <div class="text-sm text-gray-600"></div>
+                  </div>
+
+                  <div class="mt-2 space-y-2" data-med-items-target="container"></div>
+                  <div class="mt-2 text-right">
                     <button type="button"
                             class="btn btn-primary btn-sm"
                             data-action="click->med-items#add"
@@ -69,9 +122,6 @@
                       + Add
                     </button>
                   </div>
-
-                  <div class="mt-2 space-y-2" data-med-items-target="container"></div>
-
                   <template id="tmpl-medicine-row">
                     <div class="grid grid-cols-[4rem_1fr_auto_auto] items-center gap-3 w-full overflow-hidden" data-med-items-row>
                       <input type="hidden" name="charge_checklist[line_items_attributes][NEW_KEY][charge_item_id]" value="<%= @medicine_charge_item_id %>">
@@ -92,7 +142,7 @@
                         <% end %>
                       </select>
 
-                      <span class="label-text min-w-[3.5rem] text-right shrink-0" data-role="unit-price-text">$0.00</span>
+<!--                      <span class="label-text min-w-[3.5rem] text-right shrink-0" data-role="unit-price-text">$0.00</span>-->
 
                       <button type="button" class="text-gray-500 hover:text-red-600 shrink-0"
                               title="Remove" data-action="click->med-items#remove">✕</button>
@@ -108,6 +158,49 @@
       </div>
     <% end %>
   </div>
+
+  <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+    <!-- Left column -->
+    <div class="space-y-4">
+
+      <div class="flex items-center justify-between gap-3">
+        <label class="text-sm font-medium w-48 md:w-56 lg:w-64 shrink-0 text-right">Pre-Op Diagnosis:</label>
+        <%= text_field_tag "charge_checklist[metadata][pre_op_diagnosis]",
+                           @charge_checklist.metadata&.dig("pre_op_diagnosis"),
+                           class: "input input-bordered w-64" %>
+      </div>
+
+      <div class="flex items-center justify-between gap-3">
+        <label class="text-sm font-medium w-48 md:w-56 lg:w-64 shrink-0 text-right">Post-Op Diagnosis:</label>
+        <%= text_field_tag "charge_checklist[metadata][post_op_diagnosis]",
+                           @charge_checklist.metadata&.dig("post_op_diagnosis"),
+                           class: "input input-bordered w-64" %>
+      </div>
+
+      <div class="flex items-center justify-between gap-3">
+        <label class="text-sm font-medium w-48 md:w-56 lg:w-64 shrink-0 text-right">Procedure:</label>
+        <%= text_field_tag "charge_checklist[metadata][procedure]",
+                           @charge_checklist.metadata&.dig("procedure"),
+                           class: "input input-bordered w-64" %>
+      </div>
+
+    </div>
+
+    <!-- Right column -->
+    <div class="space-y-4">
+
+      <div class="flex items-center justify-between gap-3">
+        <label class="text-sm font-medium w-48 md:w-56 lg:w-64 shrink-0 text-right">RUV:</label>
+        <%= text_field_tag "charge_checklist[metadata][ruv]",
+                           @charge_checklist.metadata&.dig("ruv"),
+                           class: "input input-bordered w-64" %>
+      </div>
+
+    </div>
+
+  </div>
+
 
   <div class="inline">
     <%= f.submit "Save", class: "btn btn-primary" %>
