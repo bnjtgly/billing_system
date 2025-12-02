@@ -13,7 +13,7 @@
       <% end %>
       <button type="button" onclick="window.print()"
               class="btn btn-accent">Print</button>
-      <%= link_to "Generate SOA", soa_billing_path(@billing, format: :pdf), class: "btn btn-info" %>
+      <%= link_to "Generate SOA", soa_billing_path(@billing, format: :pdf), class: "btn btn-info", target: "_blank" %>
       <%= link_to "Back", billings_path, class: "btn btn-secondary ml-6" %>
     </div>
   </div>
