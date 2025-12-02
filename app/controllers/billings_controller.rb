@@ -1,6 +1,6 @@
 class BillingsController < ApplicationController
   before_action :require_admin!
-  before_action :set_billing, only: %i[show edit update destroy issue]
+  before_action :set_billing, only: %i[show edit update destroy issue soa]
 
   def index
     @billings = Billing
@@ -94,6 +94,15 @@ class BillingsController < ApplicationController
     @billing.update!(status: :issued, statement_date: Date.current)
     @billing.recalc_totals!
     redirect_to @billing, notice: "Billing marked as issued."
+  end
+
+  def soa
+    pdf_binary = Soa::GeneratePdf.call(
+      patient: @billing.patient,
+      checklists: @billing.charge_checklists
+    )
+    filename = "SOA-#{@billing.statement_number}-#{Date.current}.pdf"
+    send_data pdf_binary, filename: filename, type: "application/pdf", disposition: "inline"
   end
 
   def new_from_checklists
