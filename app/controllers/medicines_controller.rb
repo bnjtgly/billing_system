@@ -1,4 +1,5 @@
 class MedicinesController < ApplicationController
+  before_action :require_admin!, except: %i[index show]
   before_action :set_medicine, only: %i[ show edit update destroy ]
 
   # GET /medicines or /medicines.json

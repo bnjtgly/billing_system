@@ -1,4 +1,5 @@
 class ChargeItemsController < ApplicationController
+  before_action :require_admin!
   before_action :set_charge_item, only: %i[ show edit update destroy ]
   before_action :load_categories, only: [:new, :create, :edit, :update]
 

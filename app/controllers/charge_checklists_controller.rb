@@ -1,4 +1,5 @@
 class ChargeChecklistsController < ApplicationController
+  before_action :require_admin!, except: %i[index new show edit update]
   before_action :set_charge_checklist, only: %i[ show edit update destroy ]
 
   # GET /charge_checklists or /charge_checklists.json

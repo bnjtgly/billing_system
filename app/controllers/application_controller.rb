@@ -8,6 +8,10 @@ class ApplicationController < ActionController::Base
 
   helper_method :admin_user?
 
+  def authorize_admin!
+    redirect_to root_path, alert: "You are not authorized to access this page." unless admin_user?
+  end
+
   private
     def admin_user?
       role_name = Current.user&.role&.name.to_s

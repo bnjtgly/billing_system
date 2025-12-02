@@ -1,4 +1,5 @@
 class ChargeCategoriesController < ApplicationController
+  before_action :require_admin!
   before_action :set_charge_category, only: %i[ show edit update destroy ]
 
   # GET /charge_categories or /charge_categories.json

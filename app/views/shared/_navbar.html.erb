@@ -29,8 +29,10 @@
               </div>
               <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 z-50">
                 <li><%= link_to "Charge", charge_checklists_path, class: "#{'active' if current_page?(charge_checklists_path)}" %></li>
-                <li><%= link_to "Categories", charge_categories_path, class: "#{'active' if current_page?(charge_categories_path)}" %></li>
-                <li><%= link_to "Items", charge_items_path, class: "#{'active' if current_page?(charge_items_path)}" %></li>
+                <% if admin_user? %>
+                  <li><%= link_to "Categories", charge_categories_path, class: "#{'active' if current_page?(charge_categories_path)}" %></li>
+                  <li><%= link_to "Items", charge_items_path, class: "#{'active' if current_page?(charge_items_path)}" %></li>
+                <% end %>
               </ul>
             </div>
 
@@ -70,8 +72,10 @@
 
               <div class="px-3 pt-2 text-xs font-semibold text-gray-500 uppercase">Checklist</div>
               <%= link_to "Charge", charge_checklists_path, class: "block rounded px-3 py-2 hover:bg-gray-50" %>
-              <%= link_to "Categories", charge_categories_path, class: "block rounded px-3 py-2 hover:bg-gray-50" %>
-              <%= link_to "Items", charge_items_path, class: "block rounded px-3 py-2 hover:bg-gray-50" %>
+              <% if admin_user? %>
+                <%= link_to "Categories", charge_categories_path, class: "block rounded px-3 py-2 hover:bg-gray-50" %>
+                <%= link_to "Items", charge_items_path, class: "block rounded px-3 py-2 hover:bg-gray-50" %>
+              <% end %>
 
               <%= link_to "Medicines", medicines_path, class: "block rounded px-3 py-2 hover:bg-gray-50" %>
 

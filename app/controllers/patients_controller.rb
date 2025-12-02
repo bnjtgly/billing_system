@@ -1,4 +1,5 @@
 class PatientsController < ApplicationController
+  before_action :require_admin!, except: %i[new edit update index show]
   before_action :set_patient, only: %i[ show edit update destroy ]
 
   # Lightweight async lookup for combobox

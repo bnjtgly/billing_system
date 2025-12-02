@@ -18,9 +18,13 @@
       </div>
     </div>
     <div class="flex items-center gap-2">
-      <%= link_to "Edit", edit_medicine_path(@medicine), class: "btn btn-secondary" %>
+      <% if admin_user? %>
+        <%= link_to "Edit", edit_medicine_path(@medicine), class: "btn btn-secondary" %>
+      <% end %>
       <%= link_to "Back", medicines_path, class: "btn btn-outline" %>
-      <%= button_to "Delete", @medicine, method: :delete, form_class: "btn btn-error text-white", data: { turbo_confirm: "Are you sure?" } %>
+      <% if admin_user? %>
+        <%= button_to "Delete", @medicine, method: :delete, form_class: "btn btn-error text-white", data: { turbo_confirm: "Are you sure?" } %>
+      <% end %>
     </div>
   </div>
 
@@ -63,10 +67,12 @@
         <dt class="text-xs text-gray-500">Unit</dt>
         <dd class="text-sm text-gray-900"><%= @medicine.unit %></dd>
       </div>
-      <div>
-        <dt class="text-xs text-gray-500">Unit price</dt>
-        <dd class="text-sm text-gray-900"><%= number_to_currency(@medicine.unit_price_cents.to_i / 100.0, unit: "₱") %></dd>
-      </div>
+      <% if admin_user? %>
+        <div>
+          <dt class="text-xs text-gray-500">Unit price</dt>
+          <dd class="text-sm text-gray-900"><%= number_to_currency(@medicine.unit_price_cents.to_i / 100.0, unit: "₱") %></dd>
+        </div>
+      <% end %>
       <div>
         <dt class="text-xs text-gray-500">Quantity</dt>
         <dd class="text-sm text-gray-900"><%= @medicine.qty %></dd>

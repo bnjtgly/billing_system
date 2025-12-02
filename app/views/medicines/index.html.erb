@@ -7,7 +7,9 @@
 
   <div class="flex justify-between items-center">
     <h1 class="font-bold text-4xl">Medicines</h1>
-    <%= link_to "New medicine", new_medicine_path, class: "btn btn-primary shadow-md" %>
+    <% if admin_user? %>
+      <%= link_to "New medicine", new_medicine_path, class: "btn btn-primary shadow-md" %>
+    <% end %>
   </div>
 
   <div id="medicines" class="min-w-full divide-y divide-gray-200 space-y-5 mt-8">
@@ -21,7 +23,9 @@
             <th class="px-3 py-2 uppercase tracking-wide text-xs font-semibold">Generic name</th>
             <th class="px-3 py-2 uppercase tracking-wide text-xs font-semibold">Form / Strength</th>
             <th class="px-3 py-2 uppercase tracking-wide text-xs font-semibold">Unit</th>
-            <th class="px-3 py-2 uppercase tracking-wide text-xs font-semibold">Unit price</th>
+            <% if admin_user? %>
+              <th class="px-3 py-2 uppercase tracking-wide text-xs font-semibold">Unit price</th>
+            <% end %>
             <th class="px-3 py-2 uppercase tracking-wide text-xs font-semibold text-right">Actions</th>
           </tr>
           </thead>
